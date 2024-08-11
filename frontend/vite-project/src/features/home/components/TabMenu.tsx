@@ -11,6 +11,7 @@ const TabMenu = ({ tabLabels, tabContent, onTabChange }: TabMenuProps) => {
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    console.log(event);
     setTabIndex(newValue);
     onTabChange(tabLabels[newValue]); // Call the onTabChange callback with the new tab label
   };
