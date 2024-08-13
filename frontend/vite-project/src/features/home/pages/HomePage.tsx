@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Typography, TextField, InputAdornment } from "@mui/material";
+import React, { useState } from "react";
+import { Typography, TextField, InputAdornment, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ComponentWrapper from "../../../common/layout/common/ComponentWrapper";
 import PageContainer from "../../../common/layout/common/PageContainer";
@@ -12,6 +12,7 @@ import PartnershipPage from "./PartnershipPage";
 
 const HomePage = () => {
   const [selectedTab, setSelectedTab] = useState("방탈출"); // Default to "방탈출"
+  const [map, setMap] = useState<any>(null);
 
   const tabLabels = ["방탈출", "보드게임", "커뮤니티", "제휴"];
 
@@ -51,13 +52,27 @@ const HomePage = () => {
     setSelectedTab(tabLabel);
   };
 
+  const handleMapReady = (mapInstance: any) => {
+    console.log(mapInstance);
+    setMap(mapInstance);
+  };
+
+  const moveToGangnam = () => {
+    if (map) {
+      const gangnamLocation = new window.naver.maps.LatLng(37.4979, 127.0276);
+      map.setCenter(gangnamLocation);
+      map.setZoom(16);
+    }
+  };
+
+  console.log(map);
   return (
     <PageContainer>
       <ComponentWrapper>
         <TabMenu
           tabLabels={tabLabels}
           tabContent={tabContent}
-          onTabChange={handleTabChange} // Pass the new handler
+          onTabChange={handleTabChange}
         />
 
         {/* Search Field */}
@@ -92,7 +107,15 @@ const HomePage = () => {
           }}
         />
 
-        <NaverMap />
+        {/* NaverMap 컴포넌트에 mapReady 콜백 추가 */}
+        <NaverMap onMapReady={handleMapReady} />
+
+        <Button
+          sx={{ maxWidth: "40px", border: "1px solid black" }}
+          onClick={moveToGangnam}
+        >
+          강남구
+        </Button>
 
         {/* Conditionally render the EscapeRoomPage component */}
         {selectedTab === "방탈출" && <EscapeRoomPage />}

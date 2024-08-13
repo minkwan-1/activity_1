@@ -17,26 +17,45 @@ declare global {
   }
 }
 
-const NaverMap: React.FC = () => {
+interface NaverMapProps {
+  onMapReady?: (mapInstance: any) => void;
+}
+
+const NaverMap: React.FC<NaverMapProps> = ({ onMapReady }) => {
+  // a) 지도를 렌더링할 DOM 요소를 참조
   const mapRef = useRef<HTMLDivElement | null>(null);
+
+  // b) 사용자의 현재 위치를 저장, 초기값은 서울 시청
   const [userLocation, setUserLocation] = useState<[number, number]>([
     37.5665, 126.978,
-  ]); // 기본 위치: 서울
+  ]);
+
+  // c) 지도 상태를 저장: 로딩 중, 지원되지 않음, 또는 준비 완료.
   const [mapStatus, setMapStatus] = useState<
     "loading" | "unsupported" | "ready"
   >("loading");
+
+  // d) 위치 권한 상태를 저장: 허용됨, 거부됨, 또는 권한 요청 필요.
   const [locationPermission, setLocationPermission] = useState<
     "granted" | "denied" | "prompt"
   >("prompt");
+
+  // e) Naver Map 인스턴스를 저장
   const [map, setMap] = useState<any>(null);
+
+  // f) 스낵바에 표시할 메시지를 저장, 메시지가 없으면 null
   const [snackbarMessage, setSnackbarMessage] = useState<string | null>(null);
+
+  // g) 위치 권한 요청 다이얼로그의 표시 여부를 저장
   const [showPermissionDialog, setShowPermissionDialog] = useState(false);
 
+  // 1. userLoacation을 기반으로 Map을 초기화
   useEffect(() => {
     initializeMap(userLocation);
     checkLocationPermission();
   }, []);
 
+  // 2. Naver Map을 초기화하고, 지도가 준비되면 콜백을 호출
   const initializeMap = (location: [number, number]) => {
     if (window.naver && mapRef.current) {
       try {
@@ -48,6 +67,9 @@ const NaverMap: React.FC = () => {
         setMap(newMap);
         window.naver.maps.Event.once(newMap, "init_stylemap", () => {
           setMapStatus("ready");
+          if (onMapReady) {
+            onMapReady(newMap);
+          }
         });
       } catch (error) {
         console.error("Error initializing Naver Map:", error);
@@ -58,6 +80,7 @@ const NaverMap: React.FC = () => {
     }
   };
 
+  // 3. 위치 권한 상태를 확인하고 업데이트를 진행
   const checkLocationPermission = async () => {
     if ("permissions" in navigator) {
       const permission = await navigator.permissions.query({
@@ -71,6 +94,7 @@ const NaverMap: React.FC = () => {
     }
   };
 
+  // 4. 위치 권한 요청 다이얼로그를 표시
   const requestLocationPermission = () => {
     if (locationPermission === "denied") {
       setSnackbarMessage(
@@ -82,6 +106,7 @@ const NaverMap: React.FC = () => {
     setShowPermissionDialog(true);
   };
 
+  // 5. 위치 권한을 요청하고 사용자의 현재 위치를 가져옴
   const handlePermissionRequest = () => {
     setShowPermissionDialog(false);
     if ("geolocation" in navigator) {
@@ -122,6 +147,7 @@ const NaverMap: React.FC = () => {
     }
   };
 
+  // 6. 지도의 상태에 따라 적절한 콘텐츠를 렌더링
   const renderContent = () => {
     switch (mapStatus) {
       case "loading":
@@ -145,7 +171,7 @@ const NaverMap: React.FC = () => {
         return null;
     }
   };
-
+  console.log(mapStatus);
   return (
     <Box
       position="relative"
