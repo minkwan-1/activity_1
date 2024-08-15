@@ -1,20 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
+import { useKakaoMap } from "../hooks/useKakaoMap";
+import { seoulDistricts } from "../data/data";
 
 const KakaoMap: React.FC = () => {
-  const mapContainerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (mapContainerRef.current) {
-      // Kakao Maps API script should be loaded before this runs
-      const mapOption = {
-        center: new (window as any).kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-        level: 3, // 지도의 확대 레벨
-      };
-
-      // 지도를 표시할 div와 지도 옵션으로 지도를 생성합니다
-      new (window as any).kakao.maps.Map(mapContainerRef.current, mapOption);
-    }
-  }, []);
+  const { mapContainerRef, panTo } = useKakaoMap(37.5759, 126.9769); // 초기값: 광화문
 
   return (
     <div>
@@ -23,6 +12,16 @@ const KakaoMap: React.FC = () => {
         ref={mapContainerRef}
         style={{ width: "100%", height: "400px" }}
       ></div>
+      <div>
+        {seoulDistricts.map((district) => (
+          <button
+            key={district.name}
+            onClick={() => panTo(district.lat, district.lng)}
+          >
+            {district.name}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

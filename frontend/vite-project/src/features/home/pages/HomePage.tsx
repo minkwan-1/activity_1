@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Typography, TextField, InputAdornment, Button } from "@mui/material";
+import { useState } from "react";
+import { Typography, TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ComponentWrapper from "../../../common/layout/common/ComponentWrapper";
 import PageContainer from "../../../common/layout/common/PageContainer";
@@ -95,10 +95,6 @@ const HomePage = () => {
 
         {/* NaverMap 컴포넌트에 mapReady 콜백 추가 */}
         <KakaoMap />
-
-        <Button sx={{ maxWidth: "40px", border: "1px solid black" }}>
-          강남구
-        </Button>
 
         {/* Conditionally render the EscapeRoomPage component */}
         {selectedTab === "방탈출" && <EscapeRoomPage />}
