@@ -60,17 +60,12 @@ const HomePage = () => {
       alert("키워드를 입력해주세요!");
       return;
     }
-
-    // Assuming `ps` is a global variable for Kakao Places service
     const ps = new kakao.maps.services.Places();
-
     ps.keywordSearch(keyword, placesSearchDB);
   };
 
   const placesSearchDB = (data: any, status: any) => {
     if (status === kakao.maps.services.Status.OK) {
-      // Handle the successful search results here
-      // Example: Display the results on the map
       setSearchResults(data);
       console.log(data);
     } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
@@ -79,8 +74,7 @@ const HomePage = () => {
       alert("검색 결과 중 오류가 발생했습니다.");
     }
   };
-  console.log(searchResults);
-
+  console.log(selectedTab);
   return (
     <PageContainer>
       <ComponentWrapper>
@@ -136,7 +130,7 @@ const HomePage = () => {
         />
 
         {/* KakaoMap Component rendering */}
-        <KakaoMap />
+        <KakaoMap selectedTab={selectedTab} />
 
         {/* Render search results */}
         {searchResults?.map((result, index) => (
