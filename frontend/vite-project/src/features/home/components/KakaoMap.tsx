@@ -23,13 +23,14 @@ const StyledButton = styled(Button)<{ isSelected?: boolean }>(
 
 const KakaoMap: React.FC = () => {
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
+  // 초기값: 서울특별시청
   const { mapContainerRef, panTo, addMarker, clearMarkers } = useKakaoMap(
     37.5665,
     126.978
-  ); // 초기값: 서울특별시청
+  );
 
   useEffect(() => {
-    // 각 구의 중심에 마커 추가
+    // 서울 25개 자치구 중심에 마커 추가
     seoulDistricts.forEach((district) => {
       addMarker(district.lat, district.lng);
     });
@@ -40,9 +41,13 @@ const KakaoMap: React.FC = () => {
     lat: number,
     lng: number
   ) => {
+    // 선택된 자치구 name으로 selectedDistrict(state) update
     setSelectedDistrict(districtName);
+    // 선택된 자치구의 위도, 경도를 통해 panTo 실행
     panTo(lat, lng);
+    // clearMarkers 함수 실행
     clearMarkers();
+    // addMarker 함수 실행
     addMarker(lat, lng);
   };
 

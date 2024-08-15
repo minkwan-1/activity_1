@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Typography, TextField, InputAdornment } from "@mui/material";
+import { Typography, TextField, InputAdornment, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ComponentWrapper from "../../../common/layout/common/ComponentWrapper";
 import PageContainer from "../../../common/layout/common/PageContainer";
@@ -10,11 +10,14 @@ import BoardGamePage from "./BoardGamePage";
 import CommunityPage from "./CommunityPage";
 import PartnershipPage from "./PartnershipPage";
 
-const HomePage = () => {
-  const [selectedTab, setSelectedTab] = useState("방탈출"); // Default to "방탈출"
-  // const [map, setMap] = useState<any>(null);
+// Assuming kakao.maps.services.Status and ps (placesService) are globally available
+declare const kakao: any;
 
+const HomePage = () => {
+  const [selectedTab, setSelectedTab] = useState("방탈출");
+  const [keyword, setKeyword] = useState("");
   const tabLabels = ["방탈출", "보드게임", "커뮤니티", "제휴"];
+  const [searchResults, setSearchResults] = useState<any[]>([]);
 
   const tabContent = [
     <Typography key="0">
@@ -52,6 +55,32 @@ const HomePage = () => {
     setSelectedTab(tabLabel);
   };
 
+  const handleSearch = () => {
+    if (!keyword.trim()) {
+      alert("키워드를 입력해주세요!");
+      return;
+    }
+
+    // Assuming `ps` is a global variable for Kakao Places service
+    const ps = new kakao.maps.services.Places();
+
+    ps.keywordSearch(keyword, placesSearchDB);
+  };
+
+  const placesSearchDB = (data: any, status: any) => {
+    if (status === kakao.maps.services.Status.OK) {
+      // Handle the successful search results here
+      // Example: Display the results on the map
+      setSearchResults(data);
+      console.log(data);
+    } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+      alert("검색 결과가 존재하지 않습니다.");
+    } else if (status === kakao.maps.services.Status.ERROR) {
+      alert("검색 결과 중 오류가 발생했습니다.");
+    }
+  };
+  console.log(searchResults);
+
   return (
     <PageContainer>
       <ComponentWrapper>
@@ -64,10 +93,23 @@ const HomePage = () => {
         {/* Search Field */}
         <TextField
           placeholder="지역으로 방탈출/보드게임 카페 찾기"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
                 <SearchIcon />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="end">
+                <Button
+                  onClick={handleSearch}
+                  variant="contained"
+                  color="primary"
+                >
+                  검색
+                </Button>
               </InputAdornment>
             ),
           }}
@@ -93,8 +135,13 @@ const HomePage = () => {
           }}
         />
 
-        {/* NaverMap 컴포넌트에 mapReady 콜백 추가 */}
+        {/* KakaoMap Component rendering */}
         <KakaoMap />
+
+        {/* Render search results */}
+        {searchResults?.map((result, index) => (
+          <p key={index}>{result?.place_name}</p>
+        ))}
 
         {/* Conditionally render the EscapeRoomPage component */}
         {selectedTab === "방탈출" && <EscapeRoomPage />}

@@ -1,3 +1,5 @@
+// 서울 25개 자치구 <이름, 위도, 경도> Mockup Data
+// ex)  { name: "종로구", lat: 37.57305, lng: 126.979189 },
 export const seoulDistricts = [
   { name: "종로구", lat: 37.57305, lng: 126.979189 },
   { name: "중구", lat: 37.563757, lng: 126.997532 },

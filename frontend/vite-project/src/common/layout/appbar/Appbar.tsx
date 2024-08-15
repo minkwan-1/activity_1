@@ -33,6 +33,7 @@ const Appbar = () => {
             alignItems: "center",
             fontSize: "1.5rem",
             color: "#05ce02",
+
             cursor: "pointer",
           }}
           onClick={() => navigate("/")}

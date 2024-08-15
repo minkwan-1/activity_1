@@ -19,11 +19,12 @@ export const useKakaoMap = (initialLat: number, initialLng: number) => {
     }
   }, [initialLat, initialLng]);
 
+  // panTo
   const panTo = (lat: number, lng: number) => {
     const moveLatLon = new (window as any).kakao.maps.LatLng(lat, lng);
     mapRef.current.panTo(moveLatLon);
   };
-
+  // addMarker
   const addMarker = (lat: number, lng: number) => {
     const markerPosition = new (window as any).kakao.maps.LatLng(lat, lng);
     const marker = new (window as any).kakao.maps.Marker({
@@ -33,7 +34,7 @@ export const useKakaoMap = (initialLat: number, initialLng: number) => {
     marker.setMap(mapRef.current);
     markersRef.current.push(marker);
   };
-
+  // clearMarkers
   const clearMarkers = () => {
     markersRef.current.forEach((marker) => marker.setMap(null));
     markersRef.current = [];
