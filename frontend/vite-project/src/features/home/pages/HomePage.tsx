@@ -3,7 +3,7 @@ import { Typography, TextField, InputAdornment, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ComponentWrapper from "../../../common/layout/common/ComponentWrapper";
 import PageContainer from "../../../common/layout/common/PageContainer";
-import NaverMap from "../components/NaverMap";
+import KakaoMap from "../components/KakaoMap";
 import TabMenu from "../components/TabMenu";
 import EscapeRoomPage from "./EscapeRoomPage";
 import BoardGamePage from "./BoardGamePage";
@@ -12,7 +12,7 @@ import PartnershipPage from "./PartnershipPage";
 
 const HomePage = () => {
   const [selectedTab, setSelectedTab] = useState("방탈출"); // Default to "방탈출"
-  const [map, setMap] = useState<any>(null);
+  // const [map, setMap] = useState<any>(null);
 
   const tabLabels = ["방탈출", "보드게임", "커뮤니티", "제휴"];
 
@@ -52,20 +52,6 @@ const HomePage = () => {
     setSelectedTab(tabLabel);
   };
 
-  const handleMapReady = (mapInstance: any) => {
-    console.log(mapInstance);
-    setMap(mapInstance);
-  };
-
-  const moveToGangnam = () => {
-    if (map) {
-      const gangnamLocation = new window.naver.maps.LatLng(37.4979, 127.0276);
-      map.setCenter(gangnamLocation);
-      map.setZoom(16);
-    }
-  };
-
-  console.log(map);
   return (
     <PageContainer>
       <ComponentWrapper>
@@ -108,12 +94,9 @@ const HomePage = () => {
         />
 
         {/* NaverMap 컴포넌트에 mapReady 콜백 추가 */}
-        <NaverMap onMapReady={handleMapReady} />
+        <KakaoMap />
 
-        <Button
-          sx={{ maxWidth: "40px", border: "1px solid black" }}
-          onClick={moveToGangnam}
-        >
+        <Button sx={{ maxWidth: "40px", border: "1px solid black" }}>
           강남구
         </Button>
 
