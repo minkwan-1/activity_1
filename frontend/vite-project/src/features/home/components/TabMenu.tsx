@@ -1,19 +1,23 @@
-import { useState } from "react";
+// src/components/TabMenu.tsx
+import React, { useState } from "react";
 import { Tabs, Tab, Box } from "@mui/material";
 
 interface TabMenuProps {
   tabLabels: string[];
-  tabContent: React.ReactNode[];
-  onTabChange: (tabLabel: string) => void; // Add this line
+  tabContent: React.ReactNode[]; // 유지
+  onTabChange: (tabLabel: string) => void;
 }
 
-const TabMenu = ({ tabLabels, tabContent, onTabChange }: TabMenuProps) => {
+const TabMenu: React.FC<TabMenuProps> = ({
+  tabLabels,
+  tabContent,
+  onTabChange,
+}) => {
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    console.log(event);
     setTabIndex(newValue);
-    onTabChange(tabLabels[newValue]); // Call the onTabChange callback with the new tab label
+    onTabChange(tabLabels[newValue]);
   };
 
   return (
@@ -28,16 +32,14 @@ const TabMenu = ({ tabLabels, tabContent, onTabChange }: TabMenuProps) => {
           alignItems: "center",
           height: "80px",
           "& .MuiTabs-indicator": {
-            backgroundColor: "#05ce02", // Indicator color
+            backgroundColor: "#05ce02",
           },
           "& .MuiTab-root": {
-            color: "gray", // Default tab text color
-            // Ensuring text color applies even when not selected
+            color: "gray",
             "&.Mui-selected": {
-              color: "#05ce02", // Selected tab text color
+              color: "#05ce02",
             },
           },
-          // Applying color for selected tab
           "& .Mui-selected": {
             color: "#05ce02",
           },

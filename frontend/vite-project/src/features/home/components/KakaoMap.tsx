@@ -66,7 +66,7 @@ const KakaoMap: React.FC<KakaoMapProps> = ({
             display: "flex",
             flexWrap: "wrap",
             gap: "8px",
-            justifyContent: "flex-start", // Align buttons to the start (left)
+            justifyContent: "flex-start",
             marginTop: "10px",
             marginBottom: "10px",
           }}
