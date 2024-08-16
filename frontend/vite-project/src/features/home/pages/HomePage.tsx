@@ -16,6 +16,7 @@ declare const kakao: any;
 const HomePage = () => {
   const [selectedTab, setSelectedTab] = useState("방탈출");
   const [keyword, setKeyword] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
   const tabLabels = ["방탈출", "보드게임", "커뮤니티", "제휴"];
   const [searchResults, setSearchResults] = useState<any[]>([]);
 
@@ -39,20 +40,24 @@ const HomePage = () => {
       <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold" }}>
         커뮤니티 (Community)
       </Typography>
-      방탈출과 보드게임을 좋아하는 사람들과 소통할 수 있는 커뮤니티입니다.
+      , 방탈출과 보드게임을 좋아하는 사람들과 소통할 수 있는 커뮤니티입니다.
       이벤트, 모임, 정보 공유 등 다양한 활동을 통해 친구를 만들고 소통해보세요.
     </Typography>,
     <Typography key="3">
       <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold" }}>
         제휴 (Partnerships)
       </Typography>
-      제휴된 장소와 할인 정보를 확인하고 특별한 혜택을 누려보세요. 다양한 제휴
+      , 제휴된 장소와 할인 정보를 확인하고 특별한 혜택을 누려보세요. 다양한 제휴
       파트너와 함께 특별한 경험을 제공받을 수 있습니다.
     </Typography>,
   ];
 
   const handleTabChange = (tabLabel: string) => {
     setSelectedTab(tabLabel);
+    if (selectedDistrict) {
+      // 지역을 이미 선택한 경우 해당 지역과 탭에 맞는 검색 실행
+      searchInDistrict(selectedDistrict, tabLabel);
+    }
   };
 
   const handleSearch = () => {
@@ -74,7 +79,21 @@ const HomePage = () => {
       alert("검색 결과 중 오류가 발생했습니다.");
     }
   };
-  console.log(selectedTab);
+
+  const searchInDistrict = (districtName: string, tabLabel: string) => {
+    const searchKeyword = `${districtName} ${tabLabel}`;
+    setKeyword(searchKeyword);
+    const ps = new kakao.maps.services.Places();
+    ps.keywordSearch(searchKeyword, placesSearchDB);
+  };
+
+  const handleDistrictClick = (districtName: string) => {
+    setSelectedDistrict(districtName);
+    searchInDistrict(districtName, selectedTab);
+  };
+
+  console.log(searchResults);
+
   return (
     <PageContainer>
       <ComponentWrapper>
@@ -99,8 +118,7 @@ const HomePage = () => {
               <InputAdornment position="end">
                 <Button
                   onClick={handleSearch}
-                  variant="contained"
-                  color="primary"
+                  sx={{ bgcolor: "#05ce02", color: "white" }}
                 >
                   검색
                 </Button>
@@ -130,7 +148,10 @@ const HomePage = () => {
         />
 
         {/* KakaoMap Component rendering */}
-        <KakaoMap selectedTab={selectedTab} />
+        <KakaoMap
+          selectedTab={selectedTab}
+          onDistrictClick={handleDistrictClick}
+        />
 
         {/* Render search results */}
         {searchResults?.map((result, index) => (

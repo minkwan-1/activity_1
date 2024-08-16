@@ -6,6 +6,7 @@ import { styled } from "@mui/material/styles";
 
 interface KakaoMapProps {
   selectedTab: string;
+  onDistrictClick: (districtName: string) => void; // 추가된 부분
 }
 
 // MUI 스타일링을 위한 Button 컴포넌트 커스터마이즈
@@ -25,9 +26,8 @@ const StyledButton = styled(Button)<{ isSelected?: boolean }>(
   })
 );
 
-const KakaoMap: React.FC<KakaoMapProps> = ({ selectedTab }) => {
+const KakaoMap: React.FC<KakaoMapProps> = ({ onDistrictClick }) => {
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
-  // 초기값: 서울특별시청
   const { mapContainerRef, panTo, addMarker, clearMarkers } = useKakaoMap(
     37.5665,
     126.978
@@ -53,6 +53,8 @@ const KakaoMap: React.FC<KakaoMapProps> = ({ selectedTab }) => {
     clearMarkers();
     // addMarker 함수 실행
     addMarker(lat, lng);
+    // onDistrictClick 함수 실행
+    onDistrictClick(districtName);
   };
 
   return (
@@ -62,29 +64,26 @@ const KakaoMap: React.FC<KakaoMapProps> = ({ selectedTab }) => {
         ref={mapContainerRef}
         style={{ width: "100%", height: "400px" }}
       ></div>
-      {/* selectedTab이 '방탈출' 또는 '보드게임'인 경우에만 버튼 목록 렌더링 */}
-      {(selectedTab === "방탈출" || selectedTab === "보드게임") && (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "flex-start",
-            marginTop: "10px",
-          }}
-        >
-          {seoulDistricts.map((district) => (
-            <StyledButton
-              key={district.name}
-              isSelected={selectedDistrict === district.name}
-              onClick={() =>
-                handleButtonClick(district.name, district.lat, district.lng)
-              }
-            >
-              {district.name}
-            </StyledButton>
-          ))}
-        </div>
-      )}
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "flex-start",
+          marginTop: "10px",
+        }}
+      >
+        {seoulDistricts.map((district) => (
+          <StyledButton
+            key={district.name}
+            isSelected={selectedDistrict === district.name}
+            onClick={() =>
+              handleButtonClick(district.name, district.lat, district.lng)
+            }
+          >
+            {district.name}
+          </StyledButton>
+        ))}
+      </div>
     </div>
   );
 };
