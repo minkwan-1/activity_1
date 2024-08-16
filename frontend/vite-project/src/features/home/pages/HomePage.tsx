@@ -112,7 +112,7 @@ const HomePage = () => {
         {/* Search Field */}
         {(selectedTab === "방탈출" || selectedTab === "보드게임") && (
           <TextField
-            placeholder="점포명으로 찾기 (예: 파라박스 강남점)"
+            placeholder="점포명으로 찾기 (예: 엑스케이프 강남점)"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             InputProps={{
