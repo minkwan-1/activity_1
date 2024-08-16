@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Button,
   Container,
@@ -13,6 +13,8 @@ import { Google } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { ArrowForward, ArrowBack } from "@mui/icons-material";
 import PageContainer from "../../../common/layout/common/PageContainer";
+import axios from "axios";
+import { kakaoImg } from "../../../common/images";
 
 // 스타일링된 버튼들
 const CustomButton = styled(Button)(({ theme }) => ({
@@ -24,16 +26,33 @@ const GoogleButton = styled(CustomButton)({
   backgroundColor: "#fff",
   border: "1px solid #ccc",
   color: "#000",
+  padding: "15px 0",
+  width: "100%",
+  minHeight: "48px",
+  fontSize: "16px",
+  fontWeight: "bold",
   "&:hover": {
     backgroundColor: "#f5f5f5",
   },
 });
 
 const KakaoButton = styled(CustomButton)({
-  backgroundColor: "#ffe502",
-  color: "black",
+  backgroundColor: "#ffe502", // 기본 배경색
+  color: "transparent", // 텍스트 색상 투명
+  backgroundImage: `url(${kakaoImg})`, // 카카오 이미지 URL
+  backgroundSize: "cover", // 이미지 크기 조정
+  backgroundPosition: "center", // 이미지 위치 조정
+  backgroundRepeat: "no-repeat", // 이미지 반복 방지
+  textAlign: "center", // 텍스트 중앙 정렬
+  padding: "15px 0", // 버튼 안쪽 여백
+  width: "100%", // 버튼 너비 100%
+  minHeight: "48px", // 버튼 최소 높이
+  fontSize: "16px", // 텍스트 크기
+  fontWeight: "bold", // 텍스트 두께
+  textIndent: "-9999px", // 텍스트 숨기기
   "&:hover": {
-    backgroundColor: "#ffe502",
+    backgroundColor: "#ffe502", // Hover 시 배경색
+    backgroundImage: `url(${kakaoImg})`, // Hover 시 이미지
   },
 });
 
@@ -53,13 +72,13 @@ const slides = [
 ];
 
 // 로그인 페이지 컴포넌트
-const LoginPage: React.FC = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+const AuthPage: React.FC = () => {
+  const [currentSlide, setCurrentSlide] = React.useState(0);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   // 자동 슬라이드 변경
-  useEffect(() => {
+  React.useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
     }, 3000); // 3초마다 슬라이드 변경
@@ -76,6 +95,16 @@ const LoginPage: React.FC = () => {
   // 다음 슬라이드로 이동
   const handleNext = () => {
     setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
+  };
+
+  // 카카오 로그인 처리 로직
+  const handleLogin = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/auth/kakao");
+      window.location.href = response.data.redirectUrl; // 카카오 인증 페이지로 리다이렉트
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   };
 
   return (
@@ -194,14 +223,8 @@ const LoginPage: React.FC = () => {
                   소셜 계정으로 시작하기
                 </Typography>
 
-                <KakaoButton variant="contained" sx={{ padding: "15px 0" }}>
-                  카카오로 로그인
-                </KakaoButton>
-                <GoogleButton
-                  variant="outlined"
-                  startIcon={<Google />}
-                  sx={{ padding: "15px 0" }}
-                >
+                <KakaoButton onClick={handleLogin}>카카오 로그인</KakaoButton>
+                <GoogleButton variant="outlined" startIcon={<Google />}>
                   Google로 로그인
                 </GoogleButton>
               </Box>
@@ -213,4 +236,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default AuthPage;
