@@ -100,6 +100,8 @@ const HomePage = () => {
     searchInDistrict(districtName, selectedTab);
   };
 
+  console.log(searchResults);
+
   return (
     <PageContainer>
       <ComponentWrapper>
