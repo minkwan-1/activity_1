@@ -1,5 +1,13 @@
 import React from "react";
-import { Grid, Card, CardContent, Typography } from "@mui/material";
+import {
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+  CardActions,
+} from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 interface SearchResult {
   place_name: string;
@@ -19,6 +27,9 @@ const SearchResults: React.FC<SearchResultsProps> = ({ searchResults }) => (
         <Card
           sx={{
             height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            position: "relative",
             "&:hover": {
               border: "1px solid #05ce02",
               boxShadow: "none",
@@ -26,7 +37,21 @@ const SearchResults: React.FC<SearchResultsProps> = ({ searchResults }) => (
             border: "1px solid #ddd",
           }}
         >
-          <CardContent>
+          <CardActions
+            sx={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              padding: "8px",
+            }}
+          >
+            <IconButton>
+              <MoreVertIcon />
+            </IconButton>
+          </CardActions>
+          <CardContent sx={{ paddingTop: "40px" }}>
+            {" "}
+            {/* Adding padding to ensure content is not covered */}
             <Typography variant="h6" gutterBottom>
               {result.place_name}
             </Typography>
