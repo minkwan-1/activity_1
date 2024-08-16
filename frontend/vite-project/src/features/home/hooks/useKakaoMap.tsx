@@ -1,44 +1,45 @@
-import { useEffect, useRef } from "react";
+import { useRef, useEffect, useCallback } from "react";
 
-export const useKakaoMap = (initialLat: number, initialLng: number) => {
-  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+declare const kakao: any;
+
+export const useKakaoMap = (
+  initialLat: number,
+  initialLng: number,
+  initialZoom: number
+) => {
+  const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
 
   useEffect(() => {
     if (mapContainerRef.current) {
-      const mapOption = {
-        center: new (window as any).kakao.maps.LatLng(initialLat, initialLng),
-        level: 3,
-      };
-
-      mapRef.current = new (window as any).kakao.maps.Map(
-        mapContainerRef.current,
-        mapOption
-      );
+      const map = new kakao.maps.Map(mapContainerRef.current, {
+        center: new kakao.maps.LatLng(initialLat, initialLng),
+        level: initialZoom,
+      });
+      mapRef.current = map;
     }
-  }, [initialLat, initialLng]);
+  }, [initialLat, initialLng, initialZoom]);
 
-  // panTo
-  const panTo = (lat: number, lng: number) => {
-    const moveLatLon = new (window as any).kakao.maps.LatLng(lat, lng);
+  const panTo = useCallback((lat: number, lng: number) => {
+    const moveLatLon = new kakao.maps.LatLng(lat, lng);
     mapRef.current.panTo(moveLatLon);
-  };
-  // addMarker
-  const addMarker = (lat: number, lng: number) => {
-    const markerPosition = new (window as any).kakao.maps.LatLng(lat, lng);
-    const marker = new (window as any).kakao.maps.Marker({
-      position: markerPosition,
-    });
+  }, []);
 
+  const addMarker = useCallback((lat: number, lng: number, title: string) => {
+    const markerPosition = new kakao.maps.LatLng(lat, lng);
+    const marker = new kakao.maps.Marker({
+      position: markerPosition,
+      title: title,
+    });
     marker.setMap(mapRef.current);
     markersRef.current.push(marker);
-  };
-  // clearMarkers
-  const clearMarkers = () => {
+  }, []);
+
+  const clearMarkers = useCallback(() => {
     markersRef.current.forEach((marker) => marker.setMap(null));
     markersRef.current = [];
-  };
+  }, []);
 
   return { mapContainerRef, panTo, addMarker, clearMarkers };
 };

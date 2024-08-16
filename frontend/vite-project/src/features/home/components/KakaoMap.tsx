@@ -6,10 +6,9 @@ import { styled } from "@mui/material/styles";
 
 interface KakaoMapProps {
   selectedTab: string;
-  onDistrictClick: (districtName: string) => void; // 추가된 부분
+  onDistrictClick: (districtName: string) => void;
 }
 
-// MUI 스타일링을 위한 Button 컴포넌트 커스터마이즈
 const StyledButton = styled(Button)<{ isSelected?: boolean }>(
   ({ isSelected }) => ({
     border: isSelected ? "2px solid #04b301" : "1px solid #04b301",
@@ -26,64 +25,65 @@ const StyledButton = styled(Button)<{ isSelected?: boolean }>(
   })
 );
 
-const KakaoMap: React.FC<KakaoMapProps> = ({ onDistrictClick }) => {
+const KakaoMap: React.FC<KakaoMapProps> = ({
+  selectedTab,
+  onDistrictClick,
+}) => {
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
   const { mapContainerRef, panTo, addMarker, clearMarkers } = useKakaoMap(
     37.5665,
-    126.978
+    126.978,
+    5
   );
 
   useEffect(() => {
-    // 서울 25개 자치구 중심에 마커 추가
-    seoulDistricts.forEach((district) => {
-      addMarker(district.lat, district.lng);
-    });
-  }, [addMarker]);
+    if (selectedDistrict) {
+      const district = seoulDistricts.find((d) => d.name === selectedDistrict);
+      if (district) {
+        panTo(district.lat, district.lng);
+        clearMarkers();
+        addMarker(district.lat, district.lng, district.name);
+      }
+    }
+  }, [selectedDistrict, panTo, addMarker, clearMarkers]);
 
-  const handleButtonClick = (
-    districtName: string,
-    lat: number,
-    lng: number
-  ) => {
-    // 선택된 자치구 name으로 selectedDistrict(state) update
-    setSelectedDistrict(districtName);
-    // 선택된 자치구의 위도, 경도를 통해 panTo 실행
-    panTo(lat, lng);
-    // clearMarkers 함수 실행
-    clearMarkers();
-    // addMarker 함수 실행
-    addMarker(lat, lng);
-    // onDistrictClick 함수 실행
-    onDistrictClick(districtName);
+  const handleButtonClick = (districtName: string) => {
+    if (selectedTab === "방탈출" || selectedTab === "보드게임") {
+      setSelectedDistrict(districtName);
+      onDistrictClick(districtName);
+    }
   };
 
   return (
     <div>
       <div
-        id="map"
         ref={mapContainerRef}
-        style={{ width: "100%", height: "400px" }}
-      ></div>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "flex-start",
-          marginTop: "10px",
-        }}
-      >
-        {seoulDistricts.map((district) => (
-          <StyledButton
-            key={district.name}
-            isSelected={selectedDistrict === district.name}
-            onClick={() =>
-              handleButtonClick(district.name, district.lat, district.lng)
-            }
-          >
-            {district.name}
-          </StyledButton>
-        ))}
-      </div>
+        style={{ width: "100%", height: "500px", borderRadius: "15px" }}
+      />
+      {selectedTab === "방탈출" || selectedTab === "보드게임" ? (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "10px", // Add spacing between buttons
+            justifyContent: "flex-start", // Align buttons to the start (left)
+            marginTop: "10px",
+            marginBottom: "10px",
+          }}
+        >
+          {seoulDistricts.map((district) => (
+            <StyledButton
+              key={district.name}
+              onClick={() => handleButtonClick(district.name)}
+              isSelected={selectedDistrict === district.name}
+            >
+              {district.name}
+            </StyledButton>
+          ))}
+        </div>
+      ) : (
+        <p style={{ textAlign: "center", marginTop: "10px" }}>준비중...</p>
+      )}
     </div>
   );
 };

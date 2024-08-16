@@ -1,24 +1,29 @@
 import { useState } from "react";
-import { Typography, TextField, InputAdornment, Button } from "@mui/material";
+import {
+  Typography,
+  TextField,
+  InputAdornment,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ComponentWrapper from "../../../common/layout/common/ComponentWrapper";
 import PageContainer from "../../../common/layout/common/PageContainer";
 import KakaoMap from "../components/KakaoMap";
 import TabMenu from "../components/TabMenu";
-import EscapeRoomPage from "./EscapeRoomPage";
-import BoardGamePage from "./BoardGamePage";
-import CommunityPage from "./CommunityPage";
-import PartnershipPage from "./PartnershipPage";
 
-// Assuming kakao.maps.services.Status and ps (placesService) are globally available
 declare const kakao: any;
 
 const HomePage = () => {
   const [selectedTab, setSelectedTab] = useState("방탈출");
   const [keyword, setKeyword] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
-  const tabLabels = ["방탈출", "보드게임", "커뮤니티", "제휴"];
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [pagination, setPagination] = useState<any>(null);
+
+  const tabLabels = ["방탈출", "보드게임", "커뮤니티", "제휴"];
 
   const tabContent = [
     <Typography key="0">
@@ -40,14 +45,14 @@ const HomePage = () => {
       <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold" }}>
         커뮤니티 (Community)
       </Typography>
-      , 방탈출과 보드게임을 좋아하는 사람들과 소통할 수 있는 커뮤니티입니다.
+      방탈출과 보드게임을 좋아하는 사람들과 소통할 수 있는 커뮤니티입니다.
       이벤트, 모임, 정보 공유 등 다양한 활동을 통해 친구를 만들고 소통해보세요.
     </Typography>,
     <Typography key="3">
       <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold" }}>
         제휴 (Partnerships)
       </Typography>
-      , 제휴된 장소와 할인 정보를 확인하고 특별한 혜택을 누려보세요. 다양한 제휴
+      제휴된 장소와 할인 정보를 확인하고 특별한 혜택을 누려보세요. 다양한 제휴
       파트너와 함께 특별한 경험을 제공받을 수 있습니다.
     </Typography>,
   ];
@@ -55,7 +60,6 @@ const HomePage = () => {
   const handleTabChange = (tabLabel: string) => {
     setSelectedTab(tabLabel);
     if (selectedDistrict) {
-      // 지역을 이미 선택한 경우 해당 지역과 탭에 맞는 검색 실행
       searchInDistrict(selectedDistrict, tabLabel);
     }
   };
@@ -65,14 +69,16 @@ const HomePage = () => {
       alert("키워드를 입력해주세요!");
       return;
     }
-    const ps = new kakao.maps.services.Places();
-    ps.keywordSearch(keyword, placesSearchDB);
+    if (selectedTab === "방탈출" || selectedTab === "보드게임") {
+      const ps = new kakao.maps.services.Places();
+      ps.keywordSearch(keyword, placesSearchDB);
+    }
   };
 
-  const placesSearchDB = (data: any, status: any) => {
+  const placesSearchDB = (data: any, status: any, pagination: any) => {
     if (status === kakao.maps.services.Status.OK) {
       setSearchResults(data);
-      console.log(data);
+      setPagination(pagination);
     } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
       alert("검색 결과가 존재하지 않습니다.");
     } else if (status === kakao.maps.services.Status.ERROR) {
@@ -81,18 +87,18 @@ const HomePage = () => {
   };
 
   const searchInDistrict = (districtName: string, tabLabel: string) => {
-    const searchKeyword = `${districtName} ${tabLabel}`;
-    setKeyword(searchKeyword);
-    const ps = new kakao.maps.services.Places();
-    ps.keywordSearch(searchKeyword, placesSearchDB);
+    if (tabLabel === "방탈출" || tabLabel === "보드게임") {
+      const searchKeyword = `${districtName} ${tabLabel}`;
+      setKeyword(searchKeyword);
+      const ps = new kakao.maps.services.Places();
+      ps.keywordSearch(searchKeyword, placesSearchDB);
+    }
   };
 
   const handleDistrictClick = (districtName: string) => {
     setSelectedDistrict(districtName);
     searchInDistrict(districtName, selectedTab);
   };
-
-  console.log(searchResults);
 
   return (
     <PageContainer>
@@ -104,65 +110,125 @@ const HomePage = () => {
         />
 
         {/* Search Field */}
-        <TextField
-          placeholder="지역으로 방탈출/보드게임 카페 찾기"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment position="end">
-                <Button
-                  onClick={handleSearch}
-                  sx={{ bgcolor: "#05ce02", color: "white" }}
-                >
-                  검색
-                </Button>
-              </InputAdornment>
-            ),
-          }}
-          fullWidth
-          sx={{
-            marginBottom: "20px",
-            bgcolor: "#f5f5f5",
-            borderRadius: "10px",
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                border: "none",
+        {(selectedTab === "방탈출" || selectedTab === "보드게임") && (
+          <TextField
+            placeholder="점포명으로 찾기 (예: 파라박스 강남점)"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Button
+                    onClick={handleSearch}
+                    sx={{
+                      bgcolor: "#05ce02",
+                      color: "white",
+                      borderRadius: "7px",
+                    }}
+                  >
+                    검색
+                  </Button>
+                </InputAdornment>
+              ),
+            }}
+            fullWidth
+            sx={{
+              marginBottom: "20px",
+              bgcolor: "#f5f5f5",
+              borderRadius: "10px",
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  border: "none",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#ced4da",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#ced4da",
+                },
               },
-              "&:hover fieldset": {
-                borderColor: "#ced4da",
+              "& .MuiInputBase-input": {
+                padding: "15px",
               },
-              "&.Mui-focused fieldset": {
-                borderColor: "#ced4da",
-              },
-            },
-            "& .MuiInputBase-input": {
-              padding: "15px",
-            },
-          }}
-        />
+            }}
+          />
+        )}
 
-        {/* KakaoMap Component rendering */}
         <KakaoMap
           selectedTab={selectedTab}
           onDistrictClick={handleDistrictClick}
         />
 
-        {/* Render search results */}
-        {searchResults?.map((result, index) => (
-          <p key={index}>{result?.place_name}</p>
-        ))}
+        {/* Render search results as cards */}
+        {(selectedTab === "방탈출" || selectedTab === "보드게임") && (
+          <Grid container spacing={2} sx={{ marginTop: "20px" }}>
+            {searchResults?.map((result, index) => (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Card
+                  sx={{
+                    height: "100%",
+                    "&:hover": {
+                      border: "1px solid #05ce02",
+                      boxShadow: "none", // Remove the default box-shadow
+                    },
+                    border: "1px solid #ddd", // Default border
+                  }}
+                >
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      {result.place_name}
+                    </Typography>
+                    {result.road_address_name && (
+                      <Typography variant="body2" color="textSecondary">
+                        {result.road_address_name}
+                      </Typography>
+                    )}
+                    <Typography variant="body2" color="textSecondary">
+                      {result.address_name}
+                    </Typography>
+                    {result.phone && (
+                      <Typography variant="body2" color="textSecondary">
+                        {result.phone}
+                      </Typography>
+                    )}
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
 
-        {/* Conditionally render the EscapeRoomPage component */}
-        {selectedTab === "방탈출" && <EscapeRoomPage />}
-        {selectedTab === "보드게임" && <BoardGamePage />}
-        {selectedTab === "커뮤니티" && <CommunityPage />}
-        {selectedTab === "제휴" && <PartnershipPage />}
+        {/* Pagination Controls */}
+        {(selectedTab === "방탈출" || selectedTab === "보드게임") &&
+          pagination && (
+            <div style={{ marginTop: "20px", textAlign: "center" }}>
+              <div>
+                {Array.from({ length: pagination.last }, (_, index) => (
+                  <Button
+                    key={index}
+                    onClick={() => pagination.gotoPage(index + 1)}
+                    variant={
+                      pagination.current === index + 1
+                        ? "contained"
+                        : "outlined"
+                    }
+                    sx={{
+                      margin: "0 5px",
+                      bgcolor: "#05ce02",
+                      color: "white",
+                    }}
+                  >
+                    {index + 1}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
       </ComponentWrapper>
     </PageContainer>
   );
