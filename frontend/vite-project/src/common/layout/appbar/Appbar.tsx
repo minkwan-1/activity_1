@@ -94,7 +94,7 @@ const Appbar = () => {
             }}
           >
             <Button
-              onClick={() => navigate("/escape-rooms")}
+              onClick={() => navigate("/escape")}
               sx={{
                 fontWeight: "bold",
                 color: "gray",

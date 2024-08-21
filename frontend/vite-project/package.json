@@ -17,6 +17,7 @@
     "@types/react-slick": "^0.23.13",
     "@vitejs/plugin-react": "^4.3.1",
     "axios": "^1.7.4",
+    "framer-motion": "^11.3.28",
     "kakao-maps-sdk": "^1.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
