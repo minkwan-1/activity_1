@@ -11,6 +11,7 @@ const ComponentWrapper: React.FC<ComponentWrapperProps> = ({ children }) => {
       sx={{
         maxWidth: "1200px",
         minHeight: "100vh",
+        border: "1px solid green",
         display: "flex",
         flexDirection: "column",
         margin: "0 auto",
