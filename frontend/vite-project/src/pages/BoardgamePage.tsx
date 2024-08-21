@@ -2,7 +2,7 @@ import PageContainer from "../common/layout/common/PageContainer";
 import ComponentWrapper from "../common/layout/common/ComponentWrapper";
 import { Box, Typography } from "@mui/material";
 
-const EscapePage = () => {
+const BoardgamePage = () => {
   return (
     <PageContainer>
       <ComponentWrapper>
@@ -19,11 +19,11 @@ const EscapePage = () => {
           <Typography>서울 자치구 버튼 필드</Typography>
         </Box>
         <Box sx={{ border: "1px solid black", minHeight: "800px" }}>
-          <Typography>방탈출 업체 정보 카드 렌더링 영역</Typography>
+          <Typography>보드게임 업체 정보 카드 렌더링 영역</Typography>
         </Box>
       </ComponentWrapper>
     </PageContainer>
   );
 };
 
-export default EscapePage;
+export default BoardgamePage;

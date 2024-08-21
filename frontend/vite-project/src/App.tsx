@@ -1,4 +1,4 @@
-import { LandingPage, EscapePage } from "./pages";
+import { LandingPage, EscapePage, BoardgamePage } from "./pages";
 import { Route, Routes } from "react-router-dom";
 
 const App = () => {
@@ -6,6 +6,7 @@ const App = () => {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/escape" element={<EscapePage />} />
+      <Route path="/boardgame" element={<BoardgamePage />} />
     </Routes>
   );
 };
