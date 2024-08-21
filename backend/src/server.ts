@@ -2,11 +2,21 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 import axios from "axios";
 
 dotenv.config();
 
 const app = express();
+const uri: string = process.env.MONGO_URI as string;
+mongoose
+  .connect(uri)
+  .then(() => {
+    console.log("MongoDB에 성공적으로 연결되었습니다.");
+  })
+  .catch((err) => {
+    console.error("MongoDB 연결에 실패했습니다.", err);
+  });
 
 // CORS 설정
 app.use(
